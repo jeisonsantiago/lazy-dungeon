@@ -35,6 +35,10 @@ public:
     void init();
     const matrix_u8 &GetMainRoom(){return m_mainMatrix;} ;
 
+    size_t &getRoomsPerRows(){
+        return m_roomsPerRows;
+    }
+
 
 private:
 

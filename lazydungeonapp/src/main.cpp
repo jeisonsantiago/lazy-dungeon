@@ -42,6 +42,47 @@ ScreenSize centerWindow(){
     return ScreenSize{monitorWidth/2, monitorHeight/2};
 }
 
+// bool edit = true;
+
+void renderGui(int *rows = nullptr){
+
+    float w = 190;
+    float h = 30;
+    float margin = 10;
+    float marginTop = 10;
+
+    float mainW = GetScreenWidth() - w - margin;
+
+    // render controls docked on the right side of the screen
+
+    // GuiButton(Rectangle{mainW,marginTop+0,w,h},"Test");
+    // std::string test;
+    // GuiTextBox(Rectangle{mainW,marginTop+40,w,h},test.data(),4,false);
+
+    // GuiGroupBox(Rectangle{mainW,marginTop+90,300,300},"Controls");
+    // GuiLine(Rectangle{mainW,marginTop+90,300,300},"test");
+    int v = 10;
+
+    int fontSize =20;
+    int fontSpacing = 20;
+    GuiSetStyle(TEXTBOX, TEXT_ALIGNMENT, TEXT_ALIGN_CENTER);
+    DrawRectangleRec((Rectangle){mainW-20,20,190,100},  WHITE);
+    GuiGroupBox((Rectangle){mainW-20,20,190,100},  "MAIN ROOM SIZE");
+    GuiLabel((Rectangle){mainW-30+(60),40,60,20}, "Rows");
+    GuiSpinner((Rectangle){mainW-95+(100),40,100,20},NULL,rows, 10, 40, true);
+    GuiLabel((Rectangle){mainW-30+(60),80,60,20}, "Columns");
+    GuiSpinner((Rectangle){mainW-95+(100),80,100,20},NULL,&fontSpacing, 1, 10, true);
+
+    float height = 110;
+
+    DrawRectangleRec((Rectangle){mainW-20,height+20,190,100},  WHITE);
+    GuiGroupBox((Rectangle){mainW-20,height+20,190,100},  "IN ROOMS SIZE");
+    GuiLabel((Rectangle){mainW-30+(60),height+40,60,20}, "Rows");
+    GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},NULL,rows, 10, 40, true);
+    GuiLabel((Rectangle){mainW-30+(60),height+80,60,20}, "Columns");
+    GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},NULL,&fontSpacing, 1, 10, true);
+}
+
 int main()
 {
     std::vector<Rectangle> drawRects;
@@ -69,6 +110,8 @@ int main()
     // camera.offset = {10,10};
     camera.rotation = 0.0f;
     camera.zoom = 0.7f;
+
+    int rw = lz.getRoomsPerRows();
     //--------------------------------------------------------------------------------------
 
     Vector2 mouseFirst = {0,0};
@@ -81,6 +124,7 @@ int main()
         // TODO: Update your variables here
         if(IsKeyPressed(KEY_SPACE)){
             lz.init();
+            rw = lz.getRoomsPerRows();
         }
 
         // Update
@@ -125,6 +169,9 @@ int main()
         }
 
         EndMode2D();
+
+        renderGui(&rw);
+
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
