@@ -16,11 +16,6 @@ void Dungeon::setRoomSize(size_t rows, size_t cols)
 
 void Dungeon::init()
 {
-
-    // assert(((m_roomsPerRows % m_roomRows) != 0
-    //            ||
-    //        (m_roomsPerCols * m_roomCols) != 0) && "Room size must be compatible with the number of rooms in the main matrix");
-
     m_mainMatrix = matrix_u8(
         m_roomsPerRows * m_roomRows,
         m_roomsPerCols * m_roomCols
@@ -38,6 +33,7 @@ void Dungeon::init()
     auto roomsMat = applyRandomMatrixWalkDown(m_mainMatrixSimplified);
 
     for (int index = 0; index < roomsMat.roomLoc.size(); ++index) {
+
         // first create a room with the desired size
         matrix_u8 inRoom(m_roomRows,m_roomCols,1);
 
@@ -45,6 +41,22 @@ void Dungeon::init()
         // in case the room has more than one code it will be merged
         for(auto code:roomsMat.roomLoc[index].codeList){
             inRoom.multiply(m_codeRooms[code]);
+        }
+
+        if(m_populateRoom){
+            // TODO: spicy things up with some simple random walk to populate the room
+            applyRandomMatrixWalk(inRoom,getRandomNumber(3,5));
+            for (int r = 0; r < getRandomNumber(1,4); ++r) {
+                applyRandomMatrixWalk(inRoom,getRandomNumber(1,3),true);
+            }
+        }
+
+        // set the entrance/exit if needed
+        if(m_entranceExit && index == 0){
+            setEntranceExit(inRoom,2);
+        }
+        if(m_entranceExit && index == roomsMat.roomLoc.size()-1){
+            setEntranceExit(inRoom,3);
         }
 
         // TODO: problem when inserting matrix

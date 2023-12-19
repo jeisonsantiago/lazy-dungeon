@@ -6,6 +6,15 @@
 
 namespace lazyDungeon {
 
+struct DungeonConfig{
+    size_t roomsPerRows = 0;
+    size_t roomsPerCols = 0;
+    size_t roomRows = 0;
+    size_t roomCols = 0;
+    bool entranceExit = false;
+    bool populate = false;
+};
+
 struct Coord{
 
     Coord() = default;

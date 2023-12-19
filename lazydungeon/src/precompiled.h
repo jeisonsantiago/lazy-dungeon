@@ -15,7 +15,7 @@ namespace lazyDungeon{
 using uuid64 = size_t;
 uuid64 generate_uuid();
 std::string n_to_string( float x );
-int getRandomNumbpcer(int min, int max);
+int getRandomNumber(int min, int max);
 }
 
 

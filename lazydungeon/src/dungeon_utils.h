@@ -245,6 +245,23 @@ static RoomPosCode applyRandomMatrixWalkDown(matrix_u8 &matrix){
 }
 
 
+// go through the matrix and set the entrance or exit
+// with the desired number
+static void setEntranceExit(matrix_u8 &matrix, unsigned char value){
+    // get random row and column
+
+    while(true){
+        int row = getRandomNumber(1,matrix.rows-2);
+        int col = getRandomNumber(1,matrix.cols-2);
+
+        if(matrix(row,col) == 0){
+            matrix(row,col) = value;
+            break;
+        }
+    }
+
+}
+
 }
 
 

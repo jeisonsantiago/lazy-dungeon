@@ -3,6 +3,7 @@
 
 #include "precompiled.h"
 #include <iostream>
+#include "dungeon_types.h"
 #include "dungeon_utils.h"
 
 namespace lazyDungeon {
@@ -32,6 +33,9 @@ public:
     void createMainMatrix(size_t roomsRows, size_t roomsCols);
     void setRoomSize(size_t rows, size_t cols);
 
+    void enableEntranceExit(bool value) {m_entranceExit = value;};
+    void populateRoom(bool value) {m_populateRoom = value;};
+
     void init();
     const matrix_u8 &GetMainRoom(){return m_mainMatrix;} ;
 
@@ -39,6 +43,23 @@ public:
         return m_roomsPerRows;
     }
 
+    DungeonConfig exportConfig() const{
+        return DungeonConfig{
+            m_roomsPerRows,
+            m_roomsPerCols,
+            m_roomRows,
+            m_roomCols
+        };
+    }
+
+    void setConfig(DungeonConfig inConfig){
+        m_roomsPerRows = inConfig.roomsPerRows;
+        m_roomsPerCols = inConfig.roomsPerCols;
+        m_roomRows = inConfig.roomRows;
+        m_roomCols = inConfig.roomCols;
+        m_entranceExit = inConfig.entranceExit;
+        m_populateRoom = inConfig.populate;
+    };
 
 private:
 
@@ -52,6 +73,9 @@ private:
 
     matrix_u8 m_mainMatrix;
     matrix_u8 m_mainMatrixSimplified;
+
+    bool m_entranceExit = false;
+    bool m_populateRoom = false;
 
     std::map<uint, matrix_u8> m_codeRooms;
 
