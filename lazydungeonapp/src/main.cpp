@@ -4,6 +4,7 @@
 #include <raygui.h>
 
 #include "lazy_dungeon.h"
+#include "event.h"
 
 struct ScreenSize{
 
@@ -19,7 +20,8 @@ struct DungeonDTO{
     int roomsPerCols = 0;
     int roomRows = 0;
     int roomCols = 0;
-    bool updateRequest = false;
+    bool entranceExit = false;
+    bool populate = false;
 
     DungeonDTO(lazyDungeon::DungeonConfig dungeonConfig
         ){
@@ -79,9 +81,7 @@ void centerWindow(){
 
 // bool edit = true;
 
-void renderGui(GuiValues *guioOpt, DungeonDTO *dungeonConfig = nullptr){
-
-
+void renderGui(GuiValues *guioOpt, DungeonDTO *dungeonConfig){
 
     assert(dungeonConfig && "lazyDungeon::DungeConfig must be passed as parameter");
 
@@ -98,63 +98,81 @@ void renderGui(GuiValues *guioOpt, DungeonDTO *dungeonConfig = nullptr){
     DrawRectangleRec((Rectangle){mainW-20,20,190,100},  WHITE);
     GuiGroupBox((Rectangle){mainW-20,20,190,100},  "MAIN ROOM SIZE");
     GuiLabel((Rectangle){mainW+110,40,60,20}, "Rows");
-    if(GuiSpinner((Rectangle){mainW-95+(100),40,100,20},nullptr,&dungeonConfig->roomsPerRows, 1, 40, guioOpt->roomsPerRows)){guioOpt->roomsPerRows = !guioOpt->roomsPerRows;};
+    if(GuiSpinner((Rectangle){mainW-95+(100),40,100,20},nullptr,&dungeonConfig->roomsPerRows, 1, 40, guioOpt->roomsPerRows)){
+        guioOpt->roomsPerRows = !guioOpt->roomsPerRows;
+    };
 
     GuiLabel((Rectangle){mainW+110,80,60,20}, "Columns");
-    if(GuiSpinner((Rectangle){mainW-95+(100),80,100,20},nullptr,&dungeonConfig->roomsPerCols, 1, 40, guioOpt->roomsPerCols)){guioOpt->roomsPerCols = !guioOpt->roomsPerCols;};
+    if(GuiSpinner((Rectangle){mainW-95+(100),80,100,20},nullptr,&dungeonConfig->roomsPerCols, 1, 40, guioOpt->roomsPerCols)){
+        guioOpt->roomsPerCols = !guioOpt->roomsPerCols;
+    };
 
     float height = 110;
 
     DrawRectangleRec((Rectangle){mainW-20,height+20,190,100},  WHITE);
     GuiGroupBox((Rectangle){mainW-20,height+20,190,100},  "IN ROOMS SIZE");
     GuiLabel((Rectangle){mainW+110,height+40,60,20}, "Rows");
-    if(GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},nullptr,&dungeonConfig->roomRows, 1, 40, guioOpt->roomRows)){guioOpt->roomRows = !guioOpt->roomRows;};
+    if(GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},nullptr,&dungeonConfig->roomRows, 1, 40, guioOpt->roomRows)){
+        guioOpt->roomRows = !guioOpt->roomRows;
+    };
 
     GuiLabel((Rectangle){mainW+110,height+80,60,20}, "Columns");
-    if(GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},nullptr,&dungeonConfig->roomCols, 1, 40, guioOpt->roomCols)){guioOpt->roomCols = !guioOpt->roomCols;};
+    if(GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},nullptr,&dungeonConfig->roomCols, 1, 40, guioOpt->roomCols)){
+        guioOpt->roomCols = !guioOpt->roomCols;
+    };
 
     height = 220;
 
     GuiGroupBox((Rectangle){mainW-20,height+20,190,100},  "MAPS EXTRA");
+
+    bool entranceExitBefore = guioOpt->entranceExit;
     GuiCheckBox((Rectangle){mainW-95+(100),height+30,20,20},"Entrance/Exit",&guioOpt->entranceExit);
+    if(entranceExitBefore != guioOpt->entranceExit){
+        TraceLog(LOG_INFO,"entrance exit");
+    }
+
+    // populate before works as a trigger when the value of the checkbox changes
+    bool populateBefore = guioOpt->populate;
     GuiCheckBox((Rectangle){mainW-95+(100),height+60,20,20},"Populate Room",&guioOpt->populate);
+    if(populateBefore != guioOpt->populate){
+        TraceLog(LOG_INFO,"populate");
+    }
 }
 
 
 
 int main()
 {
-    std::vector<Rectangle> drawRects;
-
+    // size of the rectangle to be drawn
     Rectangle block = {0,0,10,10};
 
 
-
     //--------------------------------------------------------------------------------------
-    // configs must be setted before InitWindow
     SetConfigFlags(FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
     SetTargetFPS(60);
-
     InitWindow(1024, 768, "Lazy Dungeon");
+
+    //centers the window and set the size to half of the current screen
     centerWindow();
 
+
+    // camera setup
     Camera2D camera = { 0 };
     camera.target = (Vector2){ 0, 0 };
-    // camera.offset = (Vector2){
-    //     (block.width*lz.GetMainRoom().cols) / 6.0f,
-    //     (block.height*lz.GetMainRoom().rows) / 6.0f
-    // };
-
     camera.offset = {20,20};
     camera.rotation = 0.0f;
     camera.zoom = 0.9;
 
     // start lazy dungeon
     lazyDungeon::Dungeon lz(10,10,10,10);
+
     // lz.populateRoom(true);
     // lz.enableEntranceExit(true);
     lz.init();
     DungeonDTO dungeon(lz.exportConfig());
+
+    //set event systems
+    Event<lazyDungeon::DungeonConfig> eventSystem;
 
     // gui options
     GuiValues guiOptions = GuiValues();
@@ -182,7 +200,7 @@ int main()
             lz.init();
         }
 
-        // Update
+        // Update gui options
 
         // Move the camera with the mouse
         if(IsMouseButtonPressed(0)){
@@ -212,17 +230,13 @@ int main()
         }
 
         camera.zoom += (GetMouseWheelMove() * 0.05f);
-        // TraceLog(ICON_INFO,"camera-zoom:%f",camera.zoom);
-
         //----------------------------------------------------------------------------------
-
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
         ClearBackground(RAYWHITE);
 
-        //DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
         auto room = lz.GetMainRoom();
 
         BeginMode2D(camera);

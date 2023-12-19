@@ -30,16 +30,16 @@ void Dungeon::init()
 
     // apply random walk to the main matrix so we can
     // determine the layout of the rooms once we set
-    auto roomsMat = applyRandomMatrixWalkDown(m_mainMatrixSimplified);
+    m_roomPosCode = applyRandomMatrixWalkDown(m_mainMatrixSimplified);
 
-    for (int index = 0; index < roomsMat.roomLoc.size(); ++index) {
+    for (int index = 0; index < m_roomPosCode.roomLoc.size(); ++index) {
 
         // first create a room with the desired size
         matrix_u8 inRoom(m_roomRows,m_roomCols,1);
 
         // now run inRoom multiplied by the current code
         // in case the room has more than one code it will be merged
-        for(auto code:roomsMat.roomLoc[index].codeList){
+        for(auto code:m_roomPosCode.roomLoc[index].codeList){
             inRoom.multiply(m_codeRooms[code]);
         }
 
@@ -55,15 +55,60 @@ void Dungeon::init()
         if(m_entranceExit && index == 0){
             setEntranceExit(inRoom,2);
         }
-        if(m_entranceExit && index == roomsMat.roomLoc.size()-1){
+        if(m_entranceExit && index == m_roomPosCode.roomLoc.size()-1){
             setEntranceExit(inRoom,3);
         }
 
         // TODO: problem when inserting matrix
         m_mainMatrix.insert(
             inRoom,
-            roomsMat.roomLoc[index].location.row * m_roomRows,
-            roomsMat.roomLoc[index].location.col * m_roomCols);
+            m_roomPosCode.roomLoc[index].location.row * m_roomRows,
+            m_roomPosCode.roomLoc[index].location.col * m_roomCols);
+    }
+}
+
+void Dungeon::update(const DungeonConfig &conf)
+{
+    // check room sizes
+    if( conf.roomsPerRows != m_roomsPerRows ||
+        conf.roomsPerCols != m_roomsPerCols ||
+        conf.roomRows != m_roomRows ||
+        conf.roomCols != m_roomCols){
+        this->init();
+    }
+
+    for (int index = 0; index < m_roomPosCode.roomLoc.size(); ++index) {
+
+        // first create a room with the desired size
+        matrix_u8 inRoom(m_roomRows,m_roomCols,1);
+
+        // now run inRoom multiplied by the current code
+        // in case the room has more than one code it will be merged
+        for(auto code:m_roomPosCode.roomLoc[index].codeList){
+            inRoom.multiply(m_codeRooms[code]);
+        }
+
+        if(m_populateRoom){
+            // TODO: spicy things up with some simple random walk to populate the room
+            applyRandomMatrixWalk(inRoom,getRandomNumber(3,5));
+            for (int r = 0; r < getRandomNumber(1,4); ++r) {
+                applyRandomMatrixWalk(inRoom,getRandomNumber(1,3),true);
+            }
+        }
+
+        // set the entrance/exit if needed
+        if(m_entranceExit && index == 0){
+            setEntranceExit(inRoom,2);
+        }
+        if(m_entranceExit && index == m_roomPosCode.roomLoc.size()-1){
+            setEntranceExit(inRoom,3);
+        }
+
+        // TODO: problem when inserting matrix
+        m_mainMatrix.insert(
+            inRoom,
+            m_roomPosCode.roomLoc[index].location.row * m_roomRows,
+            m_roomPosCode.roomLoc[index].location.col * m_roomCols);
     }
 }
 

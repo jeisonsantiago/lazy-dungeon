@@ -52,6 +52,8 @@ public:
         };
     }
 
+    void update(const DungeonConfig& conf);
+
     void setConfig(DungeonConfig inConfig){
         m_roomsPerRows = inConfig.roomsPerRows;
         m_roomsPerCols = inConfig.roomsPerCols;
@@ -78,6 +80,8 @@ private:
     bool m_populateRoom = false;
 
     std::map<uint, matrix_u8> m_codeRooms;
+
+    RoomPosCode m_roomPosCode;
 
 
 };
