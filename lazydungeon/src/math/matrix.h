@@ -64,6 +64,10 @@ struct matrix{
         }
     }
 
+    inline void fill(const T value){
+        std::fill(mat.begin(),mat.end(),value);
+    }
+
     inline void printMat(){
         for (int r = 0; r < rows; ++r) {
             for (int c = 0; c < cols; ++c) {

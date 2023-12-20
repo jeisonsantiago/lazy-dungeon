@@ -15,31 +15,33 @@ struct ScreenSize{
     int height = 0;
 };
 
-struct DungeonDTO{
-    int roomsPerRows = 0;
-    int roomsPerCols = 0;
-    int roomRows = 0;
-    int roomCols = 0;
-    bool entranceExit = false;
-    bool populate = false;
-
-    DungeonDTO(lazyDungeon::DungeonConfig dungeonConfig
-        ){
-        roomsPerRows = static_cast<int>(dungeonConfig.roomsPerRows);
-        roomsPerCols = static_cast<int>(dungeonConfig.roomsPerCols);
-        roomRows = static_cast<int>(dungeonConfig.roomRows);
-        roomCols = static_cast<int>(dungeonConfig.roomCols);
-    }
-};
 
 
 struct GuiValues{
     int roomsPerRows;
+    bool roomsPRows;
+
     int roomsPerCols;
+    bool roomsPCols;
+
     int roomRows;
+    bool roomR;
+
     int roomCols;
+    bool roomC;
+
     bool entranceExit;
     bool populate;
+
+    std::function<void()> callback;
+
+    GuiValues(size_t rpr, size_t rpc, size_t rr, size_t rc, bool ee, bool pp):
+        roomsPerRows(static_cast<int>(rpr)),
+        roomsPerCols(static_cast<int>(rpc)),
+        roomRows(static_cast<int>(rr)),
+        roomCols(static_cast<int>(rc)),
+        entranceExit(ee),
+        populate(pp){};
 
     GuiValues(){
         roomsPerRows = 0;
@@ -67,23 +69,17 @@ void centerWindow(){
     int monitor = GetCurrentMonitor();
     int monitorWidth = GetMonitorWidth(monitor);
     int monitorHeight = GetMonitorHeight(monitor);
-    //int monitor = GetCurrentMonitor();
-    // int monitorWidth = GetScreenWidth();
-    // int monitorHeight = GetScreenHeight();
     SetWindowSize(monitorWidth/2, monitorHeight/2);
-    //SetWindowPosition((int)(monitorWidth/2)-(int)(monitorWidth/2), (int)(monitorHeight/2)-(int)(monitorHeight/2));
     SetWindowPosition(
         (monitorWidth/4),
         (monitorHeight/4));
-
-    //return ScreenSize{monitorWidth/2, monitorHeight/2};
 }
 
 // bool edit = true;
 
-void renderGui(GuiValues *guioOpt, DungeonDTO *dungeonConfig){
+void renderGui(GuiValues *guioOpt){
 
-    assert(dungeonConfig && "lazyDungeon::DungeConfig must be passed as parameter");
+    //assert(dungeonConfig && "lazyDungeon::DungeConfig must be passed as parameter");
 
     float w = 190;
     float h = 30;
@@ -98,13 +94,13 @@ void renderGui(GuiValues *guioOpt, DungeonDTO *dungeonConfig){
     DrawRectangleRec((Rectangle){mainW-20,20,190,100},  WHITE);
     GuiGroupBox((Rectangle){mainW-20,20,190,100},  "MAIN ROOM SIZE");
     GuiLabel((Rectangle){mainW+110,40,60,20}, "Rows");
-    if(GuiSpinner((Rectangle){mainW-95+(100),40,100,20},nullptr,&dungeonConfig->roomsPerRows, 1, 40, guioOpt->roomsPerRows)){
-        guioOpt->roomsPerRows = !guioOpt->roomsPerRows;
+    if(GuiSpinner((Rectangle){mainW-95+(100),40,100,20},nullptr,&guioOpt->roomsPerRows, 1, 40, false)){
+        // guioOpt->roomsPerRows = !guioOpt->roomsPerRows;
     };
 
     GuiLabel((Rectangle){mainW+110,80,60,20}, "Columns");
-    if(GuiSpinner((Rectangle){mainW-95+(100),80,100,20},nullptr,&dungeonConfig->roomsPerCols, 1, 40, guioOpt->roomsPerCols)){
-        guioOpt->roomsPerCols = !guioOpt->roomsPerCols;
+    if(GuiSpinner((Rectangle){mainW-95+(100),80,100,20},nullptr,&guioOpt->roomsPerCols, 1, 40, false)){
+        // guioOpt->roomsPerCols = !guioOpt->roomsPerCols;
     };
 
     float height = 110;
@@ -112,13 +108,13 @@ void renderGui(GuiValues *guioOpt, DungeonDTO *dungeonConfig){
     DrawRectangleRec((Rectangle){mainW-20,height+20,190,100},  WHITE);
     GuiGroupBox((Rectangle){mainW-20,height+20,190,100},  "IN ROOMS SIZE");
     GuiLabel((Rectangle){mainW+110,height+40,60,20}, "Rows");
-    if(GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},nullptr,&dungeonConfig->roomRows, 1, 40, guioOpt->roomRows)){
-        guioOpt->roomRows = !guioOpt->roomRows;
+    if(GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},nullptr,&guioOpt->roomRows, 1, 40, false)){
+        // guioOpt->roomRows = !guioOpt->roomRows;
     };
 
     GuiLabel((Rectangle){mainW+110,height+80,60,20}, "Columns");
-    if(GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},nullptr,&dungeonConfig->roomCols, 1, 40, guioOpt->roomCols)){
-        guioOpt->roomCols = !guioOpt->roomCols;
+    if(GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},nullptr,&guioOpt->roomCols, 1, 40, false)){
+        // guioOpt->roomCols = !guioOpt->roomCols;
     };
 
     height = 220;
@@ -128,18 +124,20 @@ void renderGui(GuiValues *guioOpt, DungeonDTO *dungeonConfig){
     bool entranceExitBefore = guioOpt->entranceExit;
     GuiCheckBox((Rectangle){mainW-95+(100),height+30,20,20},"Entrance/Exit",&guioOpt->entranceExit);
     if(entranceExitBefore != guioOpt->entranceExit){
-        TraceLog(LOG_INFO,"entrance exit");
     }
 
     // populate before works as a trigger when the value of the checkbox changes
     bool populateBefore = guioOpt->populate;
     GuiCheckBox((Rectangle){mainW-95+(100),height+60,20,20},"Populate Room",&guioOpt->populate);
     if(populateBefore != guioOpt->populate){
-        TraceLog(LOG_INFO,"populate");
+    }
+
+    if(GuiButton((Rectangle){mainW-95+(100),height+140,140,20},"ReRoll")){
+        if(guioOpt->callback){
+            guioOpt->callback();
+        }
     }
 }
-
-
 
 int main()
 {
@@ -169,13 +167,22 @@ int main()
     // lz.populateRoom(true);
     // lz.enableEntranceExit(true);
     lz.init();
-    DungeonDTO dungeon(lz.exportConfig());
-
-    //set event systems
-    Event<lazyDungeon::DungeonConfig> eventSystem;
+    auto dungeonConf = lz.exportConfig();
+    //DungeonDTO dungeon(lz.exportConfig());
 
     // gui options
-    GuiValues guiOptions = GuiValues();
+    GuiValues guiOptions = GuiValues{
+        dungeonConf.roomsPerRows,
+        dungeonConf.roomsPerCols,
+        dungeonConf.roomRows,
+        dungeonConf.roomCols,
+        dungeonConf.entranceExit,
+        dungeonConf.populate,
+    };
+
+    guiOptions.callback = [&lz](){
+        lz.init();
+    };
 
     float moveSpeed = 0.05f;
     //--------------------------------------------------------------------------------------
@@ -188,18 +195,15 @@ int main()
         // Update
         //----------------------------------------------------------------------------------
         // TODO: Update your variables here
-        if(IsKeyPressed(KEY_SPACE)){
-            lz.setConfig(lazyDungeon::DungeonConfig{
-                static_cast<size_t>(dungeon.roomsPerRows),
-                static_cast<size_t>(dungeon.roomsPerCols),
-                static_cast<size_t>(dungeon.roomRows),
-                static_cast<size_t>(dungeon.roomCols),
-                guiOptions.entranceExit,
-                guiOptions.populate
-            });
-            lz.init();
-        }
+        // generate DungeonConfig
+        dungeonConf.roomsPerRows = guiOptions.roomsPerRows;
+        dungeonConf.roomsPerCols = guiOptions.roomsPerCols;
+        dungeonConf.roomRows = guiOptions.roomRows;
+        dungeonConf.roomCols = guiOptions.roomCols;
+        dungeonConf.entranceExit = guiOptions.entranceExit;
+        dungeonConf.populate = guiOptions.populate;
 
+        lz.update(dungeonConf);
         // Update gui options
 
         // Move the camera with the mouse
@@ -262,7 +266,8 @@ int main()
 
         EndMode2D();
 
-        renderGui(&guiOptions,&dungeon);
+        //renderGui(&guiOptions,&dungeon);
+        renderGui(&guiOptions);
 
         EndDrawing();
         //----------------------------------------------------------------------------------

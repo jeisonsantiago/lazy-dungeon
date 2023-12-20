@@ -34,6 +34,7 @@ void Dungeon::init()
 
     for (int index = 0; index < m_roomPosCode.roomLoc.size(); ++index) {
 
+
         // first create a room with the desired size
         matrix_u8 inRoom(m_roomRows,m_roomCols,1);
 
@@ -74,41 +75,51 @@ void Dungeon::update(const DungeonConfig &conf)
         conf.roomsPerCols != m_roomsPerCols ||
         conf.roomRows != m_roomRows ||
         conf.roomCols != m_roomCols){
+        // m_mainMatrix.fill(0);
+        this->setConfig(conf);
         this->init();
+        return;
     }
 
-    for (int index = 0; index < m_roomPosCode.roomLoc.size(); ++index) {
 
-        // first create a room with the desired size
-        matrix_u8 inRoom(m_roomRows,m_roomCols,1);
+    if(conf.entranceExit != m_entranceExit || conf.populate != m_populateRoom){
 
-        // now run inRoom multiplied by the current code
-        // in case the room has more than one code it will be merged
-        for(auto code:m_roomPosCode.roomLoc[index].codeList){
-            inRoom.multiply(m_codeRooms[code]);
-        }
+        m_entranceExit = conf.entranceExit;
+        m_populateRoom = conf.populate;
+        // m_mainMatrix.fill(0);
+        for (int index = 0; index < m_roomPosCode.roomLoc.size(); ++index) {
 
-        if(m_populateRoom){
-            // TODO: spicy things up with some simple random walk to populate the room
-            applyRandomMatrixWalk(inRoom,getRandomNumber(3,5));
-            for (int r = 0; r < getRandomNumber(1,4); ++r) {
-                applyRandomMatrixWalk(inRoom,getRandomNumber(1,3),true);
+            // first create a room with the desired size
+            matrix_u8 inRoom(m_roomRows,m_roomCols,1);
+
+            // now run inRoom multiplied by the current code
+            // in case the room has more than one code it will be merged
+            for(auto code:m_roomPosCode.roomLoc[index].codeList){
+                inRoom.multiply(m_codeRooms[code]);
             }
-        }
 
-        // set the entrance/exit if needed
-        if(m_entranceExit && index == 0){
-            setEntranceExit(inRoom,2);
-        }
-        if(m_entranceExit && index == m_roomPosCode.roomLoc.size()-1){
-            setEntranceExit(inRoom,3);
-        }
+            if(m_populateRoom){
+                // TODO: spicy things up with some simple random walk to populate the room
+                applyRandomMatrixWalk(inRoom,getRandomNumber(3,5));
+                for (int r = 0; r < getRandomNumber(1,4); ++r) {
+                    applyRandomMatrixWalk(inRoom,getRandomNumber(1,3),true);
+                }
+            }
 
-        // TODO: problem when inserting matrix
-        m_mainMatrix.insert(
-            inRoom,
-            m_roomPosCode.roomLoc[index].location.row * m_roomRows,
-            m_roomPosCode.roomLoc[index].location.col * m_roomCols);
+            // set the entrance/exit if needed
+            if(m_entranceExit && index == 0){
+                setEntranceExit(inRoom,2);
+            }
+            if(m_entranceExit && index == m_roomPosCode.roomLoc.size()-1){
+                setEntranceExit(inRoom,3);
+            }
+
+            // TODO: problem when inserting matrix
+            m_mainMatrix.insert(
+                inRoom,
+                m_roomPosCode.roomLoc[index].location.row * m_roomRows,
+                m_roomPosCode.roomLoc[index].location.col * m_roomCols);
+        }
     }
 }
 

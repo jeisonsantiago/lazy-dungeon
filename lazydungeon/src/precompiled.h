@@ -8,6 +8,7 @@
 #include <cmath>
 #include <random>
 #include <assert.h>
+#include <functional>
 
 #define INVALID_ID 0
 
