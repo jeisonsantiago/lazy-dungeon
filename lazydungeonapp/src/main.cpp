@@ -194,7 +194,6 @@ int main()
     {
         // Update
         //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
         // generate DungeonConfig
         dungeonConf.roomsPerRows = guiOptions.roomsPerRows;
         dungeonConf.roomsPerCols = guiOptions.roomsPerCols;
@@ -203,8 +202,8 @@ int main()
         dungeonConf.entranceExit = guiOptions.entranceExit;
         dungeonConf.populate = guiOptions.populate;
 
-        lz.update(dungeonConf);
         // Update gui options
+        lz.update(dungeonConf);
 
         // Move the camera with the mouse
         if(IsMouseButtonPressed(0)){
@@ -266,7 +265,7 @@ int main()
 
         EndMode2D();
 
-        //renderGui(&guiOptions,&dungeon);
+        // render gui and share guiOptions updates
         renderGui(&guiOptions);
 
         EndDrawing();
