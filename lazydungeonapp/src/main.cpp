@@ -4,10 +4,8 @@
 #include <raygui.h>
 
 #include "lazy_dungeon.h"
-#include "event.h"
 
 struct ScreenSize{
-
     ScreenSize() = default;
     ScreenSize(const ScreenSize&) = default;
 
