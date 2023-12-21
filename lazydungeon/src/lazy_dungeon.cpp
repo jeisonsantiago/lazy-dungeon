@@ -63,6 +63,9 @@ void Dungeon::init()
     }
 }
 
+
+// update main room if requested, it will change the disposition
+// of the inner rooms in case roomsPerRows or roomsPerCols change.
 void Dungeon::update(const DungeonConfig &conf)
 {
     // check room sizes

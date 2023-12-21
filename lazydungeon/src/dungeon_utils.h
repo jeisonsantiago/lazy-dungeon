@@ -10,8 +10,8 @@ static void applyRandomMatrixWalk(matrix_u8 &matrix, int steps = 50, bool corner
 
     srand(static_cast<unsigned>(time(nullptr)));
 
-    int startX = matrix.cols / 2;
-    int startY = matrix.rows / 2;
+    int startX = (matrix.cols-1) / 2;
+    int startY = (matrix.rows-1) / 2;
 
     if(corner){
         std::unordered_map<int, Coord> corners;
