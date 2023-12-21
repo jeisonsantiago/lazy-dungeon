@@ -8,3 +8,6 @@ Lazy Dungeon is a random dungeon generator, coded as a exercise to get the hang 
 
 https://github.com/jeisonsantiago/lazy-dungeon/assets/11475059/bc1bdb01-8b1d-415b-ac97-6f0f56e9c4c0
 
+Todos:
+- export to json.
+- add enemies/loot
