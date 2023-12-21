@@ -2,11 +2,6 @@
 #include "dungeon_utils.h"
 
 namespace lazyDungeon {
-void Dungeon::createMainMatrix(size_t roomsRows, size_t roomsCols)
-{
-    m_roomsPerRows = roomsRows;
-    m_roomsPerCols = roomsCols;
-}
 
 void Dungeon::setRoomSize(size_t rows, size_t cols)
 {

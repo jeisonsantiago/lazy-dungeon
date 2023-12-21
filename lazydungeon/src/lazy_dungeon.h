@@ -1,10 +1,7 @@
 #ifndef LAZY_DUNGEON_H
 #define LAZY_DUNGEON_H
 
-#include "precompiled.h"
-#include <iostream>
 #include "dungeon_types.h"
-#include "dungeon_utils.h"
 
 namespace lazyDungeon {
 class Dungeon{
@@ -30,18 +27,14 @@ public:
         m_roomCols(roomCols)
         {};
 
-    void createMainMatrix(size_t roomsRows, size_t roomsCols);
     void setRoomSize(size_t rows, size_t cols);
 
     void enableEntranceExit(bool value) {m_entranceExit = value;};
     void populateRoom(bool value) {m_populateRoom = value;};
 
     void init();
-    const matrix_u8 &GetMainRoom(){return m_mainMatrix;} ;
 
-    size_t &getRoomsPerRows(){
-        return m_roomsPerRows;
-    }
+    const matrix_u8 &GetMainRoom(){return m_mainMatrix;};
 
     DungeonConfig exportConfig() const{
         return DungeonConfig{
@@ -67,20 +60,25 @@ private:
 
     void InitRooms();
 
+    // number of rooms per rows/columns inside the main matrix
     size_t m_roomsPerRows = 0;
     size_t m_roomsPerCols = 0;
 
+    // how many rows and columns the rooms inside the main matrix
+    // will have
     size_t m_roomRows = 0;
     size_t m_roomCols = 0;
 
-    matrix_u8 m_mainMatrix;
-    matrix_u8 m_mainMatrixSimplified;
-
+    // extra options for entrance and exit
+    // TODO: enemies? loot?
     bool m_entranceExit = false;
     bool m_populateRoom = false;
 
-    std::map<uint, matrix_u8> m_codeRooms;
+    // the return value from the lib
+    matrix_u8 m_mainMatrix;
+    matrix_u8 m_mainMatrixSimplified;
 
+    std::map<uint, matrix_u8> m_codeRooms;
     RoomPosCode m_roomPosCode;
 
 
