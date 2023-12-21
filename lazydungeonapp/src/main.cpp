@@ -92,28 +92,20 @@ void renderGui(GuiValues *guioOpt){
     DrawRectangleRec((Rectangle){mainW-20,20,190,100},  WHITE);
     GuiGroupBox((Rectangle){mainW-20,20,190,100},  "MAIN ROOM SIZE");
     GuiLabel((Rectangle){mainW+110,40,60,20}, "Rows");
-    if(GuiSpinner((Rectangle){mainW-95+(100),40,100,20},nullptr,&guioOpt->roomsPerRows, 1, 40, false)){
-        // guioOpt->roomsPerRows = !guioOpt->roomsPerRows;
-    };
+    GuiSpinner((Rectangle){mainW-95+(100),40,100,20},nullptr,&guioOpt->roomsPerRows, 1, 40, false);
 
     GuiLabel((Rectangle){mainW+110,80,60,20}, "Columns");
-    if(GuiSpinner((Rectangle){mainW-95+(100),80,100,20},nullptr,&guioOpt->roomsPerCols, 1, 40, false)){
-        // guioOpt->roomsPerCols = !guioOpt->roomsPerCols;
-    };
+    GuiSpinner((Rectangle){mainW-95+(100),80,100,20},nullptr,&guioOpt->roomsPerCols, 1, 40, false);
 
     float height = 110;
 
     DrawRectangleRec((Rectangle){mainW-20,height+20,190,100},  WHITE);
     GuiGroupBox((Rectangle){mainW-20,height+20,190,100},  "IN ROOMS SIZE");
     GuiLabel((Rectangle){mainW+110,height+40,60,20}, "Rows");
-    if(GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},nullptr,&guioOpt->roomRows, 1, 40, false)){
-        // guioOpt->roomRows = !guioOpt->roomRows;
-    };
+    GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},nullptr,&guioOpt->roomRows, 1, 40, false);
 
     GuiLabel((Rectangle){mainW+110,height+80,60,20}, "Columns");
-    if(GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},nullptr,&guioOpt->roomCols, 1, 40, false)){
-        // guioOpt->roomCols = !guioOpt->roomCols;
-    };
+    GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},nullptr,&guioOpt->roomCols, 1, 40, false);
 
     height = 220;
 

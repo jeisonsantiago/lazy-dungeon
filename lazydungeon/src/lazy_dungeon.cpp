@@ -112,6 +112,9 @@ void Dungeon::update(const DungeonConfig &conf)
                 setEntranceExit(inRoom,3);
             }
 
+            // save the inner room
+            m_roomPosCode.roomLoc[index].room = inRoom;
+
             // TODO: problem when inserting matrix
             m_mainMatrix.insert(
                 inRoom,

@@ -238,9 +238,6 @@ static RoomPosCode applyRandomMatrixWalkDown(matrix_u8 &matrix){
         rpc.roomLoc.push_back({codeList,lc});
     }
 
-    // matrix.printMat();
-    // codes.printMat();
-
     return rpc;
 }
 

@@ -81,7 +81,7 @@ private:
     std::map<uint, matrix_u8> m_codeRooms;
     RoomPosCode m_roomPosCode;
 
-
+    std::vector<matrix_u8> m_innerRooms;
 };
 
 }
