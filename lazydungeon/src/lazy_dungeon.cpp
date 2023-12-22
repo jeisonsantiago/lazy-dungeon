@@ -96,12 +96,77 @@ void Dungeon::update(const DungeonConfig &conf)
                 inRoom.multiply(m_codeRooms[code]);
             }
 
+            // if(m_populateRoom){
+            //     // TODO: spicy things up with some simple random walk to populate the room
+            //     applyRandomMatrixWalk(inRoom,getRandomNumber(3,5));
+            //     for (int r = 0; r < getRandomNumber(1,4); ++r) {
+            //         applyRandomMatrixWalk(inRoom,getRandomNumber(1,3),true);
+            //     }
+            // }
             if(m_populateRoom){
-                // TODO: spicy things up with some simple random walk to populate the room
-                applyRandomMatrixWalk(inRoom,getRandomNumber(3,5));
-                for (int r = 0; r < getRandomNumber(1,4); ++r) {
-                    applyRandomMatrixWalk(inRoom,getRandomNumber(1,3),true);
+
+                if(getRandomNumber(0,1) == 1){
+                    if(m_roomCols < 15 && m_roomRows < 15){
+                        applyRandomMatrixWalk(inRoom,getRandomNumber(3,4));
+                    }else{
+                        applyRandomMatrixWalk(inRoom,getRandomNumber(3,6));
+                    }
+
                 }
+
+
+                // populate the sides
+                for (int row = 1; row < inRoom.rows-1; ++row) {
+                    //check the left row for oppening
+                    if(inRoom(row,0) != 0){
+                        if(getRandomNumber(0,1)==0){
+                            inRoom(row,1) = 1;
+                        }
+                    }
+
+                    if(inRoom(row,inRoom.cols-1) != 0){
+                        if(getRandomNumber(0,1)==0){
+                            inRoom(row,inRoom.cols-2) = 1;
+                        }
+                    }
+                }
+
+                for (int col = 1; col < inRoom.cols-1; ++col) {
+                    //check the left row for oppening
+                    if(inRoom(0,col) != 0){
+                        if(getRandomNumber(0,1)==0){
+                            inRoom(1,col) = 1;
+                        }
+                    }
+
+                    if(inRoom(inRoom.rows-1,col) != 0){
+                        if(getRandomNumber(0,1)==0){
+                            inRoom(inRoom.rows-2,col) = 1;
+                        }
+                    }
+                }
+
+                // check corners for dead ends
+                // top left
+                if(inRoom(1,1) == 0 && inRoom(1,2) != 0 && inRoom(2,1) != 0){
+                        inRoom(1,1) = 1;
+                }
+
+                // top right
+                if(inRoom(1,inRoom.cols-2) == 0 && inRoom(1,inRoom.cols-3) != 0 && inRoom(2,inRoom.cols-2) != 0){
+                    inRoom(1,inRoom.cols-2) = 1;
+                }
+
+                // botton left
+                if(inRoom(inRoom.rows-2,1) == 0 && inRoom(inRoom.rows-3,1) != 0 && inRoom(inRoom.rows-2,2) != 0){
+                    inRoom(inRoom.rows-2,1) = 1;
+                }
+
+                // botton right
+                if(inRoom(inRoom.rows-2,inRoom.cols-2) == 0 && inRoom(inRoom.rows-3,inRoom.cols-2) != 0 && inRoom(inRoom.rows-2,inRoom.cols-3) != 0){
+                    inRoom(inRoom.rows-2,inRoom.cols-2) = 1;
+                }
+
             }
 
             // set the entrance/exit if needed
@@ -122,6 +187,11 @@ void Dungeon::update(const DungeonConfig &conf)
                 m_roomPosCode.roomLoc[index].location.col * m_roomCols);
         }
     }
+}
+
+bool Dungeon::exportToJSON(const std::string &filename)
+{
+    return false;
 }
 
 

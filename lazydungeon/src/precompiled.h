@@ -10,6 +10,8 @@
 #include <assert.h>
 #include <functional>
 
+#include "vendor/json.hpp"
+
 #define INVALID_ID 0
 
 namespace lazyDungeon{

@@ -56,6 +56,8 @@ public:
         m_populateRoom = inConfig.populate;
     };
 
+    bool exportToJSON(const std::string &filename);
+
 private:
 
     void InitRooms();

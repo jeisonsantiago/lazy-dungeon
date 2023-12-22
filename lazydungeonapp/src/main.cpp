@@ -92,20 +92,20 @@ void renderGui(GuiValues *guioOpt){
     DrawRectangleRec((Rectangle){mainW-20,20,190,100},  WHITE);
     GuiGroupBox((Rectangle){mainW-20,20,190,100},  "MAIN ROOM SIZE");
     GuiLabel((Rectangle){mainW+110,40,60,20}, "Rows");
-    GuiSpinner((Rectangle){mainW-95+(100),40,100,20},nullptr,&guioOpt->roomsPerRows, 1, 40, false);
+    GuiSpinner((Rectangle){mainW-95+(100),40,100,20},nullptr,&guioOpt->roomsPerRows, 4, 40, false);
 
     GuiLabel((Rectangle){mainW+110,80,60,20}, "Columns");
-    GuiSpinner((Rectangle){mainW-95+(100),80,100,20},nullptr,&guioOpt->roomsPerCols, 1, 40, false);
+    GuiSpinner((Rectangle){mainW-95+(100),80,100,20},nullptr,&guioOpt->roomsPerCols, 4, 40, false);
 
     float height = 110;
 
     DrawRectangleRec((Rectangle){mainW-20,height+20,190,100},  WHITE);
     GuiGroupBox((Rectangle){mainW-20,height+20,190,100},  "IN ROOMS SIZE");
     GuiLabel((Rectangle){mainW+110,height+40,60,20}, "Rows");
-    GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},nullptr,&guioOpt->roomRows, 1, 40, false);
+    GuiSpinner((Rectangle){mainW-95+(100),height+40,100,20},nullptr,&guioOpt->roomRows, 3, 40, false);
 
     GuiLabel((Rectangle){mainW+110,height+80,60,20}, "Columns");
-    GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},nullptr,&guioOpt->roomCols, 1, 40, false);
+    GuiSpinner((Rectangle){mainW-95+(100),height+80,100,20},nullptr,&guioOpt->roomCols, 3, 40, false);
 
     height = 220;
 
@@ -152,7 +152,7 @@ int main()
     camera.zoom = 0.9;
 
     // start lazy dungeon
-    lazyDungeon::Dungeon lz(10,10,10,10);
+    lazyDungeon::Dungeon lz(4,4,12,12);
 
     // lz.populateRoom(true);
     // lz.enableEntranceExit(true);
